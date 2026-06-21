@@ -68,11 +68,21 @@ class TrainConfig:
     # Total number of gradient update steps.
     max_steps: int = 10_000
 
-    # Peak learning rate for AdamW.
+    # Peak learning rate (reached after warmup).
     learning_rate: float = 3e-4
 
-    # AdamW weight decay (L2 regularization on weights).
-    weight_decay: float = 0.01
+    # Floor LR at the end of cosine decay.
+    min_learning_rate: float = 3e-5
+
+    # Linear warmup steps before cosine decay begins.
+    warmup_steps: int = 200
+
+    # AdamW weight decay — applied only to weight matrices (not bias/LN/embed).
+    weight_decay: float = 0.1
+
+    # Adam beta1 / beta2 — (0.9, 0.95) is standard for LLM pretraining.
+    beta1: float = 0.9
+    beta2: float = 0.95
 
     # Gradient clipping norm — prevents exploding gradients.
     grad_clip_norm: float = 1.0

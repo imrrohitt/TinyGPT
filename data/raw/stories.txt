@@ -46,6 +46,8 @@ Inference generates text one token at a time.
 
 Rohit reads research papers about large language models.
 
+Who is Rohit? Rohit is an AI engineer who likes building things from scratch.
+
 Fine tuning adapts a pretrained model to a new task.
 
 RAG retrieves documents to help the model answer questions.

@@ -72,6 +72,7 @@ def generate(
     max_new_tokens: int = 30,
     temperature: float = 0.8,
     checkpoint_step: int | None = None,
+    use_best: bool = False,
 ) -> str:
     """
     Generate text autoregressively from a prompt string.
@@ -81,6 +82,7 @@ def generate(
         max_new_tokens: How many tokens to generate after the prompt.
         temperature: Sampling temperature (0 = greedy, 1 = default).
         checkpoint_step: Load a specific checkpoint step (latest if None).
+        use_best: Load the best validation-loss checkpoint from checkpoints/best/.
 
     Returns:
         Full generated string (prompt + continuation).
@@ -98,18 +100,21 @@ def generate(
         dropout_rate=model_config.dropout_rate,
     )
 
+    ckpt_dir = CHECKPOINT_DIR / "best" if use_best else CHECKPOINT_DIR
+
     # Load latest or specified checkpoint (need param template for Orbax restore)
-    if not CHECKPOINT_DIR.exists() or not any(
-        p.name.startswith("checkpoint_") for p in CHECKPOINT_DIR.iterdir()
+    if not ckpt_dir.exists() or not any(
+        p.name.startswith("checkpoint_") for p in ckpt_dir.iterdir()
     ):
-        print("No checkpoint found. Train first: python -m training.train")
+        label = "best" if use_best else "regular"
+        print(f"No {label} checkpoint found. Train first: python -m training.train")
         sys.exit(1)
 
     init_rng = jax.random.PRNGKey(0)
     dummy_input = jnp.ones((1, model_config.block_size), dtype=jnp.int32)
     template = model.init(init_rng, dummy_input, train=False)
     restored = checkpoints.restore_checkpoint(
-        ckpt_dir=str(CHECKPOINT_DIR),
+        ckpt_dir=str(ckpt_dir),
         target={"params": template["params"], "step": 0},
         step=checkpoint_step,
     )
@@ -172,6 +177,11 @@ def main() -> None:
         default=None,
         help="Checkpoint step to load (default: latest)",
     )
+    parser.add_argument(
+        "--best",
+        action="store_true",
+        help="Load best validation checkpoint from checkpoints/best/",
+    )
     args = parser.parse_args()
 
     print(f"Prompt: {args.prompt!r}\n")
@@ -180,6 +190,7 @@ def main() -> None:
         max_new_tokens=args.max_tokens,
         temperature=args.temperature,
         checkpoint_step=args.checkpoint,
+        use_best=args.best,
     )
     print(f"Generated:\n{output}")
 

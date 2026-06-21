@@ -9,6 +9,7 @@ to an index before the model can process it.
 from __future__ import annotations
 
 import pickle
+import re
 from pathlib import Path
 from typing import Dict, List
 
@@ -20,12 +21,11 @@ UNK_TOKEN = "<unk>"   # Unknown words not seen during vocab building
 
 class Tokenizer:
     """
-    Simple whitespace tokenizer with a word → id vocabulary.
+    Whitespace tokenizer with normalization for robust inference.
 
-    Example:
-        vocab = {"I": 2, "love": 3, "AI": 4}
-        tokenizer.encode("I love AI")  →  [2, 3, 4]
-        tokenizer.decode([2, 3, 4])    →  "I love AI"
+    Normalization (applied at encode AND vocab-build time):
+      - lowercase: "Rohit" and "rohit" map to the same token
+      - punctuation split: "rohit?" → ["rohit", "?"]
     """
 
     def __init__(self, vocab: Dict[str, int]):
@@ -42,13 +42,25 @@ class Tokenizer:
         self.unk_id = vocab[UNK_TOKEN]
 
     @staticmethod
-    def _tokenize(text: str) -> List[str]:
+    def normalize(text: str) -> str:
         """
-        Split text into words on whitespace.
+        Lowercase and isolate punctuation so prompts match training tokens.
 
-        Keeps punctuation attached to words (e.g. "AI." stays as one token).
+        Example:
+            "Who is Rohit?" → "who is rohit ?"
         """
-        return text.strip().split()
+        text = text.lower().strip()
+        text = re.sub(r"([^\w\s])", r" \1 ", text)
+        text = re.sub(r"\s+", " ", text).strip()
+        return text
+
+    @classmethod
+    def _tokenize(cls, text: str) -> List[str]:
+        """Split normalized text into word tokens."""
+        normalized = cls.normalize(text)
+        if not normalized:
+            return []
+        return normalized.split()
 
     def encode(self, text: str) -> List[int]:
         """

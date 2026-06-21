@@ -48,12 +48,11 @@ def build_vocab(text: str, min_freq: int = 1) -> dict[str, int]:
     Returns:
         vocab dict mapping word → id.
     """
-    # Count how often each word appears
+    # Count how often each word appears (same normalization as encode())
     word_counts: dict[str, int] = {}
     for line in text.splitlines():
-        for word in line.strip().split():
-            if word:
-                word_counts[word] = word_counts.get(word, 0) + 1
+        for word in Tokenizer._tokenize(line):
+            word_counts[word] = word_counts.get(word, 0) + 1
 
     # Special tokens get the first ids (0, 1)
     vocab: dict[str, int] = {PAD_TOKEN: 0, UNK_TOKEN: 1}
