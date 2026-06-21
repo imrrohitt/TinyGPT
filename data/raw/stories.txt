@@ -1,0 +1,55 @@
+Rohit likes AI.
+
+AI helps people solve problems.
+
+Machine learning is a branch of AI.
+
+Rohit works as an AI engineer.
+
+He builds models that predict the next token.
+
+Deep learning uses neural networks with many layers.
+
+Transformers use attention to understand context.
+
+Attention lets each word look at other words in the sentence.
+
+Rohit went to Pune because he got a new job.
+
+He loves building things from scratch.
+
+TinyGPT is a small language model for learning.
+
+The capital of France is Paris.
+
+The capital of India is New Delhi.
+
+Python is a popular programming language.
+
+JAX is a library for high performance machine learning.
+
+Gradients tell the optimizer which direction to move.
+
+The optimizer updates weights to reduce loss.
+
+Loss measures how wrong the model predictions are.
+
+Tokenization converts text into numbers.
+
+Embeddings convert numbers into dense vectors.
+
+Neural networks learn patterns from data.
+
+Training repeats many times until the model improves.
+
+Inference generates text one token at a time.
+
+Rohit reads research papers about large language models.
+
+Fine tuning adapts a pretrained model to a new task.
+
+RAG retrieves documents to help the model answer questions.
+
+Agents use language models to take actions in the world.
+
+Learning by building is the best way to understand AI.
